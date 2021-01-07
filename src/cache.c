@@ -107,3 +107,15 @@ void add_in_cache(pcache, name, dump)
  toadd->next = *pcache;
  *pcache = toadd;
 }
+
+void free_cache(struct cache *c)
+{
+	struct cache *next;
+
+	do {
+		next = c->next;
+		free(c);
+		c = next;
+	} while (c);
+}
+

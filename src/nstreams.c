@@ -550,6 +550,7 @@ main(argc, argv)
  }
  if(pcap)pcap_close(pcap);
  free_networks(nets);
+ free_cache(cache);
  (*output_func)(NULL, OP_END);
  return(0);
 }

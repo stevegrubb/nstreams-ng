@@ -12,6 +12,6 @@ struct cache {
 	};
 int present_in_cache(struct cache *, char *, struct tcpdump *);
 void add_in_cache(struct cache **, char *, struct tcpdump *);
- 
+void free_cache(struct cache *c);
 	
 #endif
