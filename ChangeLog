@@ -1,6 +1,7 @@
 1.0.4
 - Fork from original code
 - Redo autocon/automake code
+- Apply many code cleanups
 
 $Id: CHANGES,v 1.2 2000/08/03 09:16:20 renaud Exp $
 What's new in version 1.0.3 :
