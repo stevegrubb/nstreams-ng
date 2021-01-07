@@ -10,6 +10,7 @@ struct network {
 	};
 	
 struct network * read_networks(FILE *);
+void free_networks(struct network *n);
 char * ip_to_network(struct network*, struct in_addr,int);
 struct in_addr  get_network_ip(struct network*, char *,int);
 int get_network_mask(struct network *, char *,int);

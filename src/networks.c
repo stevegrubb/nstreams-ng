@@ -192,6 +192,18 @@ read_networks(fd)
  return(ret);
 }
 
+void free_networks(struct network *n)
+{
+	struct network *next;
+
+	while (n->next) {
+		next = n->next;
+		free(n->asc_addr);
+		free(n->name);
+		free(n);
+		n = next;
+	}
+}
 
 /*
  * returns the mask of the network <name>
