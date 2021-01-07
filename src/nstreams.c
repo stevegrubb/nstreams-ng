@@ -326,7 +326,7 @@ main(argc, argv)
   */
  if(!O)output_func = standard_output;
  else output_func = output_function(output_name);
-
+ free(output_name);
  
  if((!dump_file) && (argc > optind))dump_file = argv[optind];
  
@@ -377,6 +377,7 @@ main(argc, argv)
     	fprintf(stderr, "Could not open interface %s - %s\n", iface_listen, pcap_err);
         exit(1);
 	}
+    free(iface_listen);
    }
    else
    {
@@ -551,6 +552,8 @@ main(argc, argv)
  if(pcap)pcap_close(pcap);
  free_networks(nets);
  free_cache(cache);
+ free(pcap_err);
+ free(iface);
  (*output_func)(NULL, OP_END);
  return(0);
 }
