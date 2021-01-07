@@ -467,7 +467,8 @@ main(argc, argv)
 	if(str)
 	  str+=offset;
 	else
-	  continue; /* pcap_next returned NULL, no packet arrived */
+	  if( l != 0 ) continue; /* pcap_next returned NULL, no packet arrived */
+	  else break;
   }
 
   /*
