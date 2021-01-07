@@ -196,13 +196,13 @@ void free_networks(struct network *n)
 {
 	struct network *next;
 
-	while (n->next) {
+	do {
 		next = n->next;
 		free(n->asc_addr);
 		free(n->name);
 		free(n);
 		n = next;
-	}
+	} while (n);
 }
 
 /*
