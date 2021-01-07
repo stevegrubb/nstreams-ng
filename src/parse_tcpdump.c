@@ -26,7 +26,7 @@
  
 #include <includes.h>
 #include "parse_tcpdump.h"
-
+#include "output.h"
 	
 /*
  * returns the number of dots in a string

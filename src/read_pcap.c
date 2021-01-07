@@ -100,7 +100,7 @@ parse_pcap_entry(data)
   {
    case IPPROTO_TCP :
    	{
-	struct bogus_tcphdr * tcp = (struct bogus_tcphdr*)(data + ip->ihl*4);
+	//struct bogus_tcphdr * tcp = (struct bogus_tcphdr*)(data + ip->ihl*4);
 	u_short * sport, * dport;
 	u_char * flags;
 	

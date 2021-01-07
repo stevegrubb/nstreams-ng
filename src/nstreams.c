@@ -145,7 +145,7 @@ main(argc, argv)
   */
  char * pcap_err = malloc(PCAP_ERRBUF_SIZE); 
  int datalink; /* datalink type */
- int offset; /* datalink size */
+ int offset = 0; /* datalink size */
  struct pcap_pkthdr  hdr;
  /* 
   * conf : configuration file
@@ -394,7 +394,7 @@ main(argc, argv)
 
  datalink = pcap_datalink(pcap);
  if (datalink < 0) {
-   fprintf(stderr, "Error getting datalink: \n", pcap_geterr(pcap));
+   fprintf(stderr, "Error getting datalink: %s\n", pcap_geterr(pcap));
    exit(1);
  }
  switch(datalink) {

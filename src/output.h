@@ -39,4 +39,6 @@ struct output * make_output(
 void standard_output(struct output *, int);
 void ipfw_output(struct output *, int);
 void ipchains_output(struct output *, int);
+char *int2proto(int);
+
 #endif

@@ -199,13 +199,13 @@ if (start < 0 || start > end) return(NULL);
 for(j=start; j <= end; j++) 
   ports[i++] = j;
   
-  tmp = realloc(ports, (i+1) * sizeof(short));
-  *num = i;
-  qsort(tmp, i, sizeof(u_short), compar);
+tmp = realloc(ports, (i+1) * sizeof(short));
+*num = i;
+qsort(tmp, i, sizeof(u_short), compar);
  
  
-  free(mem);
-  return tmp;
+free(mem);
+return tmp;
 }
 
 

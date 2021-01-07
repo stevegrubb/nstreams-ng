@@ -10,5 +10,6 @@
 #
 
 private-192-network:192.168.0.0/16
+private-192-admin:192.168.1.1/29
 private-10-network:10.0.0.0/8
 internet:0.0.0.0/0
