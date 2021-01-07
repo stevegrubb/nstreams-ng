@@ -1,6 +1,6 @@
 Summary:	Nstreams-ng - a tcpdump output analyzer
 Name:		nstreams-ng
-Version:	1.0.4
+Version:	1.1
 Release:	1%{?dist}
 License:	GPLv2+
 URL:		https://github.com/stevegrubb/nstreams-ng
@@ -31,6 +31,6 @@ make DESTDIR="%{buildroot}" INSTALL='install -p' install
 %{_mandir}/*
 
 %changelog
-* Wed Jan 06 2021 Steve Grubb <sgrubb@redhat.com>
+* Wed Jan 06 2021 Steve Grubb <sgrubb@redhat.com> 1.1-1
 -Created initial package.
 
