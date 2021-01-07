@@ -1,0 +1,279 @@
+# Syntax :
+#
+# service name:server port/proto:client port
+
+#
+# Popular icmp codes
+#
+icmp-echo-request:8/icmp:0
+icmp-echo-reply:0/icmp:0
+icmp-unreach:3/icmp:0-255
+icmp-time exceeded in transit:11/icmp:0
+
+#
+# FTP
+#
+ftp-data:20/tcp:1024-65535
+ftp:21/tcp:1024-65535
+
+#
+# SSH
+#
+ssh-unix:22/tcp:1010-1023
+ssh (version 2 or windows or masqueraded):22/tcp:1024-65535
+ssh-random:22/tcp:1-1023
+#
+# Telnet 
+#
+telnet:23/tcp:any
+
+#
+# SMTP
+#
+smtp:25/tcp:any
+
+#
+# Time
+#
+time:37/udp:1024-65535
+
+#
+# nicname (whois)
+#
+nicname:43/tcp:1024-65535
+
+#
+#
+# DNS (both udp and tcp)
+#
+dns:53/udp:any
+dns-tcp:53/tcp:any
+
+#
+# DHCP
+#
+bootps:67/udp:68
+bootpc:68/udp:67
+
+#
+# TFTP
+#
+tftp:69/udp:any
+tftp-tcp:69/tcp:any
+
+#
+# Gopher
+#
+gopher:70/tcp:1024-65535
+
+#
+# Finger
+#
+finger:79/tcp:1024-65535
+
+#
+# HTTP
+#
+http:80/tcp:1024-65535
+
+#
+# KERBEROS
+#
+kerberos:8/tcp:1024-65535
+
+#
+# pop3
+#
+pop3:110/tcp:any
+
+#
+# RPC portmap
+#
+rpc-portmapper:111/udp:any
+
+#
+# ident 
+#
+ident:113/tcp:any
+
+#
+# nntp
+#
+nntp:119/tcp:1024-65535
+
+# 
+# Network Time Protocol
+#
+ntp:123/tcp:any
+ntp:123/udp:any
+
+#
+# MS-RPC
+#
+microsoft-rpc (tcp):135/tcp:any
+microsoft-rpc (udp):135/udp:any
+
+#
+# NetBIOS
+#
+#netbios-ns (tcp):137/tcp:1024-65535
+netbios-ns (udp):137/udp:1024-65535
+netbios-ns (udp):137/udp:137
+#netbios-dgm (tcp):138/tcp:1024-65535
+netbios-dgm (udp):138/udp:1024-65535
+netbios-dgm (udp):138/udp:138
+netbios-ssn (tcp):139/tcp:1024-65535
+#netbios-ssn (udp):139/udp:1024-65535
+
+#
+# IMAP
+#
+imap:143/tcp:1024-65535
+
+#
+# SNMP
+#
+snmp:161/tcp:1024-65535
+snmp-udp:161/udp:1024-65535
+
+#
+# Appletalk
+#
+at-rtmp:201/tcp:any
+at-rtmp-udp:201/udp:any
+at-nbp:202/tcp:any
+at-nbp-udp:202/udp:any
+at-echo:204/tcp:any
+at-echo-udp:204/udp:any
+at-zis:206/tcp:any
+at-zis-udp:206/udp:any
+
+#
+# IMAP3
+#
+imap3:220/tcp:1024-65535
+imap3-udp:220/udp:1024-65535
+
+#
+# LDAP
+#
+ldap:389/tcp:1024-65535
+ldap-udp:389/udp:1024-65535
+
+
+#
+# HTTPS
+#
+https:443/tcp:1024-65535
+
+
+#
+# Syslog
+#
+syslog:514/udp:514
+syslog-cisco:514/udp:1024-65535
+
+#
+# Printer
+#
+printer:515/tcp:1-1023
+
+
+#
+# Microsoft SQL Server
+#
+ms-sql-s:1433/tcp:any
+ms-sql-s-udp:1433/udp:any
+ms-sql-m:1434/tcp:any
+ms-sql-m-udp:1434/udp:any
+
+#
+# Citrix
+#
+citrix-ica:1494/tcp:any
+citrix-ica-udp:1494/udp:any
+
+#
+# WINS
+#
+wins:1512/tcp:any
+wins-udp:1512/udp:any
+
+#
+# Radius
+#
+radius-tcp:1812/tcp:1024-65535
+radius:1812/udp:1024-65535
+radius-acct-tcp:1813/tcp:1024-65535
+radius-acct:1813/udp:1024-65535
+
+#
+# NFS
+#
+nfs:2049/udp:1024-65535
+
+
+#
+# standalone cvs
+#
+cvs-pserver:2401/tcp:1024-65535
+
+
+#
+# ICQ or terabase
+#
+icq (or terabase):4000/tcp:1024-65535
+
+#
+# X Windows
+#
+x11:6000/tcp:any
+x11-ssh-offset:6010/tcp:any
+
+#
+# Internet Relay Chat
+#
+irc:6665-6670/tcp:1024-65535
+
+#
+# Real Audio
+#
+real-audio-tcp:7070/tcp:1024-65535
+
+
+#
+# http proxy
+#
+http-proxy:8080/tcp:1024-65535
+
+#
+# HP Jetdirect 
+#
+jetdirect:9100/tcp:any
+
+# 
+# Popular Windows backdoors
+# (deactivated because you usually do not want to
+#  see this traffic on your network)
+#
+#backorifice 1.x (windows backdoor):31337/udp:1024-65535
+#hack'a'tack (windows backdoor):31789/udp:31790
+#deepthroat (windows backdoor):2140,3150/udp:any
+#netsphere (windows backdoor):30100/tcp:any
+#netsphere-ftp (windows backdoor):30102/tcp:any
+#gatecrasher (windows backdoor):6969/tcp:any
+#portal of doom (windows backdoor):10067,10167/tcp:any
+#girlfriend (windows backdoor):21554/tcp:any
+#EvilFTP (windows backdoor):23456/tcp:any
+#phAse Zero (windows backdoor):555/tcp:any
+#SubSeven (windows backdoor):1243,6711,6776/tcp:any
+
+#
+# BSD passive ftpd ports
+#
+#bsd-passive-ftp:49152-65535/tcp:1024-65535
+
+#
+# unix traceroute
+#
+#traceroute:33434-33700/udp:1025-65535

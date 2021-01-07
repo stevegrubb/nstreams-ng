@@ -1,0 +1,14 @@
+#
+# nstreams Networks file
+#
+# NOTE: You should customize this file
+#
+# Rule : first match, first taken.
+#
+# Write rules from most specific to general
+# Netmasks should get lower as you go down the file
+#
+
+private-192-network:192.168.0.0/16
+private-10-network:10.0.0.0/8
+internet:0.0.0.0/0

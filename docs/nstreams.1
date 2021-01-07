@@ -1,0 +1,215 @@
+.TH nstreams 1 "July 1999" "nstreams" "Users Manuals"
+.SH NAME
+network streams - a tcpdump output analyzer
+.SH SYNOPSIS
+.B nstreams 
+[ -v ] [ -c 
+.I "nstreams-services"
+] 
+[ -n 
+.I nstreams-networks_file
+]
+[ -N [ -i ] [ -I ]] [ -r ] [ -O output [ -D iface ] [ -Y ]] [ -u ] [ -U ] 
+[ -B ] [ -f 
+.I "tcpdump_file" ] [ -l <iface> ] [
+.I "tcpdump output"
+] 
+
+.SH DESCRIPTION
+
+.B nstreams 
+is a utility designed to identify the IP streams that are occuring on a
+network from a non-user friendly tcpdump output of several megabytes.
+
+This is especially useful when you plan to install a firewall but
+if you do not know the nstreams that the network users are
+generating (http, real audio, and more...). 
+.B nstreams
+can read the tcpdump output directly from stdin, or from a file. It can even
+generate the configuration file of your firewall, using the  -O option.
+
+
+.SH OPTIONS
+
+.IP "-c <nstreams-services-file>"
+The path to an alternate nstreams service file. This file is used to identify
+each protocol. See the 
+.B "services file"
+section later in this manual page.
+
+.IP "-n <nstreams-networks-file>"
+The path to an alternate nstreams network file. This file is used to identify
+which hosts belong to which network. See the 
+.B "networks file" 
+section later in this manual page.
+
+.IP "-f <tcpdump output file>"
+The path to the file to read data from. This file must have been generated
+using 'tcpdump -w filename'. 
+
+.IP "-l <iface>"
+Listen directly on interface <iface>. This avoids the use of tcpdump.
+
+
+.IP -N
+print the networks names instead of the hosts IP addresses. The intra-network
+traffic will not be shown. Use this option twice to show the networks IP address
+instead of their names.
+
+.IP -i 
+Also show the intra-network traffic (must be used with -N)
+
+.IP -I 
+Only show the intra-network traffic (must be used with -N)
+
+.IP -r
+be redundant. That is, the same streams will be printed each time they appear in
+the dump.
+
+.IP -v 
+print version number and exit.
+
+.IP "-O <type>"
+output type. You can use this option to generate your firewall startup script.
+Do nstreams -h to see the supported output types.
+
+.IP "-D <iface>"
+interface to apply to output onto. Must be used with -O.
+
+.IP "-Y"
+The firewall rules that will be generated will deny all packets coming from
+the outside trying to establish connections to the inside. If you system is not
+serving anything, then it's safe to turn on this option.
+
+.IP "-u" 
+Do not print the unknown streams
+
+.IP "-U" 
+Only print the unknown streams
+
+.IP "-B"
+Show broadcasts and networks
+
+
+.SH USAGE
+
+Let tcpdump(1) run some time on your network (like one week), and save its output
+in a file, by doing : 
+.br
+tcpdump -l -n > output
+.br
+or
+.br
+tcpdump -w filename
+.br
+
+Then, feed 
+.B nstreams
+with this output file, and it will turn it into a easily-readable 
+file which will help you to write efficient firewall filters.
+You may also do :
+.br
+tcpdump -l -n | nstreams
+.br
+or
+.br
+nstreams -f filename (if you used tcpdump -w)
+.br
+
+.SH "THE SERVICES FILE"
+
+The service file contains the description of each protocol, as well as their
+name. Its syntax is :
+.br
+protocol_name:server_port(s)/{udp,tcp}:client_ports(s)
+.br
+or :
+.br
+protocol_name:type(s)/icmp:code(s)
+
+Whereas :
+.IP protocol_name
+is the name of the protocol described. This name may contain any character,
+including space, except ':'.
+
+.IP server_port(s)
+is the range of ports used by the server. Usually, you will want to define
+one server port only, but you may enter any range you want.
+
+.IP ip_protocol 
+is the IP protocol that this protocol is lying onto. Acceptable values are
+.I tcp
+and 
+.I udp
+
+
+.IP client_port(s)
+
+is the range of ports that the client may use. You can set this to
+.I any
+or, for more accurate results, to ports ranges, like '1-1024,2048-4096'.
+.br
+The rules are : 'first match, first taken'.
+
+.SH "SERVICE FILE EXAMPLE"
+
+Using this syntax, you would declare the ssh protocol by :
+.br
+ssh-unix:22/tcp:1000-1023
+.br
+Because the Unix version of the ssh client uses a privileged port to connect
+onto the ssh server which listens on port 22.
+
+.SH "THE NETWORKS FILE"
+
+The networks file is used to define sets and subsets of hosts (also known as
+networks). This avoids redundancy in the output file. The syntax format for this
+file is :
+.br
+network name:ip/mask
+.br
+Whereas the network name is whatever you want, the IP is the ip of the network,
+and the mask is the CIDR netmask of the network. 
+The rule is 'first match, first taken'.
+.SH "NETWORKS FILE EXAMPLE"
+admin:192.168.19.0/29
+.br
+whole_subnet:192.168.0.0/16
+.br
+internet:0.0.0.0/0
+
+
+.SH LIMITS
+
+\(bu nstreams can only parse the output of 'tcpdump -n'
+
+\(bu Even though the output of nstreams is easier to read than the one of
+tcpdump, it is still not easily readable. Use sort(1) on the nstream output to
+get a more readable file.
+
+\(bu This program could have been written in perl
+
+.SH FILES
+
+/etc/nstreams-services
+.br
+/etc/nstreams-networks
+
+
+.SH "SEE ALSO"
+
+tcpdump(1)
+
+.SH "AUTHORS"
+
+Concept : Herve Schauer Consultants - http://www.hsc.fr
+.br
+Coding : Renaud Deraison <deraison@cvs.nessus.org>
+
+.SH "BUG REPORTS"
+
+Please send all your bug reports with the detail of your configuration to 
+Renaud Deraison <deraison@cvs.nessus.org>
+
+
+
