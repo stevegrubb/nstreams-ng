@@ -3,6 +3,8 @@ nstreams is a utility designed to identify the IP streams that are occuring on a
 
 To use it do:
 
+```
 nstreams -l <interface>
+```
 
 It does not support IPv6 at the moment, but that is being actively worked.
