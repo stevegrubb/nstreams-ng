@@ -6,7 +6,6 @@ License:	GPLv2+
 URL:		https://github.com/stevegrubb/nstreams-ng
 Packager:	Steve Grubb <sgrubb@redhat.com>
 Source:		%{name}-%{version}.tar.gz
-Buildroot:	%{_tmppath}/%{name}-%{version}-root
 BuildRequires:	libpcap-devel
 BuildRequires:	gcc make
 
@@ -23,9 +22,6 @@ make CFLAGS="%{optflags}" %{?_smp_mflags}
 
 %install
 make DESTDIR="%{buildroot}" INSTALL='install -p' install
-
-%clean
-rm -rf ${RPM_BUILD_ROOT}
 
 %files
 %defattr(755, root, root)
