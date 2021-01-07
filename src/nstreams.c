@@ -43,7 +43,7 @@ typedef struct tcpdump*(*parser_func_t)(char *);
 /* 
  * list of the supported output formats
  */
-char * formats = "\t\tipfw ipchains nstreams";
+const char * formats = "\t\tipfw ipchains nstreams";
 
 /*
  * Global variables
@@ -53,7 +53,7 @@ int opt_u = 0;
 int opt_U = 0;
 int opt_B = 0;
 
-int signal_received = 0;
+volatile int signal_received = 0;
 
 /*
  * print the command line options and
@@ -144,6 +144,7 @@ main(argc, argv)
   * pcap errbuf
   */
  char * pcap_err = malloc(PCAP_ERRBUF_SIZE); 
+ int datalink; /* datalink type */
  int offset; /* datalink size */
  struct pcap_pkthdr  hdr;
  /* 
@@ -174,7 +175,6 @@ main(argc, argv)
  char *  iface =  NULL;
  char * iface_listen = NULL;
  char * output_name = NULL;
- 
 
 
 
@@ -391,18 +391,20 @@ main(argc, argv)
 	      exit(1);
 	 }
     } 
-	 
- switch(pcap_datalink(pcap)) {
+
+ datalink = pcap_datalink(pcap);
+ if (datalink < 0) {
+   fprintf(stderr, "Error getting datalink: \n", pcap_geterr(pcap));
+   exit(1);
+ }
+ switch(datalink) {
   case DLT_EN10MB: offset = 14; break;
   case DLT_IEEE802: offset = 22; break;
   case DLT_NULL: offset = 4; break;
-  case DLT_SLIP:
-#if (__FreeBSD__ || OPENBSD || NETBSD || BSDI)
-    offset = 16;
-#else
-    offset = 24; /* Anyone use this??? */
+  case DLT_SLIP: offset = 16; break;
+#ifdef DLT_SLIP_BSDOS
+  case DLT_SLIP_BSDOS: offset = 24; break;
 #endif
-    break;
   case DLT_PPP: 
 #if (__FreeBSD__ || OPENBSD || NETBSD || BSDI)
     offset = 4;
@@ -415,6 +417,16 @@ main(argc, argv)
 #endif /* if freebsd || openbsd || netbsd || bsdi */
     break;
   case DLT_RAW: offset = 0; break;
+#ifdef DLT_LINUX_SLL
+  case DLT_LINUX_SLL: offset=16; break;
+#endif
+#ifdef DLT_FDDI
+  case DLT_FDDI: offset=21; break;
+#endif
+   
+  default: 
+    fprintf(stderr, "pcap datalink type %d not supported.\n", datalink);
+    exit(1);
   }
  }
  }

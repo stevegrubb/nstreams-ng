@@ -60,7 +60,8 @@ parse_pcap_entry(data)
   * Check that we have an IPv4 packet
   */
 
- if(ip->version!=0x04)goto stop;
+ if(ip->version!=0x04) {
+    fprintf(stderr, "ip version isn't 4...packet not decoded\n"); goto stop;}
 #ifdef DEBUG
 #define UNFIX(x) ntohs(x)
     printf("\tip_hl : %d\n", ip->ihl);
