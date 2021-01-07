@@ -14,5 +14,6 @@ struct config_rules {
 	
 struct config_rules * get_rule(struct config_rules *, struct tcpdump *);
 struct config_rules * read_config(FILE *);
+void free_rules(struct config_rules *c);
 
 #endif

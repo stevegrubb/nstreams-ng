@@ -552,6 +552,7 @@ main(argc, argv)
  if(pcap)pcap_close(pcap);
  free_networks(nets);
  free_cache(cache);
+ free_rules(cr);
  free(pcap_err);
  free(iface);
  (*output_func)(NULL, OP_END);

@@ -130,11 +130,8 @@ read_config(fd)
  char * str;
  char * any = "1-65535";
  
- 
- c = cr = malloc(sizeof(struct config_rules));
- bzero(cr, sizeof(struct config_rules));
+ c = cr = calloc(sizeof(struct config_rules), 1);
  str = malloc(1024);
- bzero(str, 1024);
 
  while(fgets(str, 1023, fd))
  {
@@ -262,8 +259,7 @@ read_config(fd)
     * entries in the configuration file
     */
    
-   c->next = malloc(sizeof(struct config_rules));
-   bzero(c->next, sizeof(struct config_rules));
+   c->next = calloc(sizeof(struct config_rules), 1);
    old = c;
    
    /*
@@ -297,4 +293,16 @@ read_config(fd)
   return(cr);
 }
 
+void free_rules(struct config_rules *c)
+{
+	struct config_rules *next;
 
+	do {
+		next = c->next;
+		free(c->name);
+		free(c->asc_dports);
+		free(c->asc_sports);
+		free(c);
+		c = next;
+	} while (c);
+}
