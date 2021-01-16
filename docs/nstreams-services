@@ -240,6 +240,10 @@ irc:6665-6670/tcp:1024-65535
 #
 real-audio-tcp:7070/tcp:1024-65535
 
+#
+# vcom-tunnel
+#
+vcom-tunnel:8001/udp:8001
 
 #
 # http proxy
