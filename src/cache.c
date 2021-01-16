@@ -99,7 +99,7 @@ void add_in_cache(pcache, name, dump)
 
  toadd = (struct cache *) malloc(sizeof(struct cache));
  toadd->name = name;
- addr_assign(&(toadd->src.addr), &(dump->src.addr));
+ addr_assign(&(toadd->src), &(dump->src));
  addr_assign(&(toadd->dst), &(dump->dst));
  toadd->sport = dump->ports[0];
  toadd->dport = dump->ports[1];
