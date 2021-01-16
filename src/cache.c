@@ -27,6 +27,7 @@
 #include <includes.h>
 #include "parse_tcpdump.h"
 #include "cache.h"
+#include "networks.h"
 
 /*
  * The 'cache' is used to determine whether we should
@@ -58,13 +59,13 @@ present_in_cache(cache, name, dump)
      * to check for the addresses
      */
  
-    if((cache->src.s_addr == dump->src.s_addr))
+    if(addr_equal(&(cache->src), &(dump->src)))
     	{      
        /*
         * check that the streams have at least one port in
 	* common
 	*/
-        if(cache->dst.s_addr == dump->dst.s_addr){
+        if(addr_equal(&(cache->dst), &(dump->dst))){
 	
 	/*
 	 * Only pay attention to the server port
@@ -98,8 +99,8 @@ void add_in_cache(pcache, name, dump)
 
  toadd = (struct cache *) malloc(sizeof(struct cache));
  toadd->name = name;
- toadd->src.s_addr = dump->src.s_addr;
- toadd->dst.s_addr = dump->dst.s_addr;
+ addr_assign(&(toadd->src.addr), &(dump->src.addr));
+ addr_assign(&(toadd->dst), &(dump->dst));
  toadd->sport = dump->ports[0];
  toadd->dport = dump->ports[1];
  toadd->proto = dump->proto;
