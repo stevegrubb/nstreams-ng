@@ -44,7 +44,8 @@ int2proto(proto)
  	proto==IPPROTO_UDP ? "udp":
 	proto==IPPROTO_ICMP ? "icmp":
 	proto==IPPROTO_IGMP ? "igmp":
-	proto==IPPROTO_UDPLITE ? "udp-lite" : NULL);
+	proto==IPPROTO_UDPLITE ? "udp-lite" :
+        proto==IPPROTO_ICMPV6 ? "icmpv6" : NULL);
 }
 
 
