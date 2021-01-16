@@ -28,7 +28,7 @@
 #include "parse_tcpdump.h"
 #include "ports.h"
 #include "config_rules.h"
-
+#include "networks.h"
 
 /*
  * This part of the source is in charge of reading /etc/nstreams-services
@@ -89,15 +89,15 @@ get_rule(cr, dump)
 	    * 'src' must be the server, and 'dst' the client
 	    *
 	    */
-	   struct in_addr t;
+	   struct ip_addr t;
 	   int port;
-	  
-	   t.s_addr = dump->src.s_addr;
+
+	   addr_assign(&t, &(dump->src));
 	   port = dump->ports[0];
 	   dump->ports[0] = dump->ports[1];
 	   dump->ports[1] = port;
-	   dump->src.s_addr = dump->dst.s_addr;
-	   dump->dst.s_addr = t.s_addr;
+	   addr_assign(&(dump->src), &(dump->dst));
+	   addr_assign(&(dump->dst), &t);
 	   }
 	  }
 	  else {

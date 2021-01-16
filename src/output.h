@@ -8,13 +8,13 @@ struct output {
 	int dport;		/* destination port        */
 	char * src;		/* source IP (in ascii)    */
 	char * dst;		/* dest IP (in ascii )     */
-	struct in_addr ia_src;  /* source IP 		   */
-	struct in_addr ia_dst;  /* dest   IP		   */
+	struct ip_addr ia_src;  /* source IP 		   */
+	struct ip_addr ia_dst;  /* dest   IP		   */
 	
-	struct in_addr s_bcast;	/* broadcast of the source */
-	struct in_addr d_bcast; /* broadcast of the dest   */
-	struct in_addr ia_sorig;/* original ip 		   */
-	struct in_addr ia_dorig;/* original ip		   */
+	struct ip_addr s_bcast;	/* broadcast of the source */
+	struct ip_addr d_bcast; /* broadcast of the dest   */
+	struct ip_addr ia_sorig;/* original ip 		   */
+	struct ip_addr ia_dorig;/* original ip		   */
 	int smask;		/* source netmask          */
 	int dmask;		/* dest netmask		   */
 	int proto;		/* prototype		   */
@@ -32,7 +32,7 @@ void free_output(struct output *);
 
 struct output * make_output(
  struct network *,
- struct in_addr,struct in_addr,
+ struct ip_addr,struct ip_addr,
  int,int,int,
  struct config_rules *,int, char *);
  

@@ -1,9 +1,20 @@
 #ifndef PARSE_TCPDUMP_H__
 #define PARSE_TCPDUMP_H__
 
+#include <netinet/ip.h>
+#include <netinet/ip6.h>
+
+struct ip_addr {
+   uint8_t fam; // socket family type
+   union {
+       struct in_addr ipv4_addr;
+       struct in6_addr ipv6_addr;
+   }addr;
+};
+
 struct tcpdump {
-	struct in_addr src;
-	struct in_addr dst;
+	struct ip_addr src;
+	struct ip_addr dst;
 	int proto;
 	u_short ports[2]; /* sport and dport (udp/tcp),
 			     type & code (icmp) */

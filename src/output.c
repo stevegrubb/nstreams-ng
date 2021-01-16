@@ -42,7 +42,9 @@ int2proto(proto)
 {
  return(proto==IPPROTO_TCP ? "tcp":
  	proto==IPPROTO_UDP ? "udp":
-	proto==IPPROTO_ICMP ? "icmp":NULL);
+	proto==IPPROTO_ICMP ? "icmp":
+	proto==IPPROTO_IGMP ? "igmp":
+	proto==IPPROTO_UDPLITE ? "udp-lite" : NULL);
 }
 
 
@@ -66,8 +68,8 @@ free_output(output)
 struct output * 
 make_output(nets, src, dst, sport, dport, proto, rule,shownet,iface)
  struct network * nets;
- struct in_addr src;
- struct in_addr dst;
+ struct ip_addr src;
+ struct ip_addr dst;
  int sport, dport, proto;
  struct config_rules * rule;
  int shownet;
@@ -79,8 +81,8 @@ make_output(nets, src, dst, sport, dport, proto, rule,shownet,iface)
  
  ret->sport = sport;
  ret->dport = dport;
- ret->ia_sorig.s_addr = src.s_addr;
- ret->ia_dorig.s_addr = dst.s_addr;
+ addr_assign(&(ret->ia_sorig), &src);
+ addr_assign(&(ret->ia_dorig), &dst);
  if(shownet)
  {
   ret->src = strdup(ip_to_network(nets, src,shownet>1));
@@ -90,15 +92,15 @@ make_output(nets, src, dst, sport, dport, proto, rule,shownet,iface)
   ret->smask = get_network_mask(nets, ret->src, shownet>1);
   ret->dmask = get_network_mask(nets, ret->dst, shownet>1);
   
-  ret->s_bcast = get_broadcast(ret->ia_src, ret->smask);
-  ret->d_bcast = get_broadcast(ret->ia_dst, ret->dmask);
+  ret->s_bcast = get_broadcast(&ret->ia_src, ret->smask);
+  ret->d_bcast = get_broadcast(&ret->ia_dst, ret->dmask);
  }
  else
  {
-  ret->src = strdup(inet_ntoa(src));
-  ret->dst = strdup(inet_ntoa(dst));
-  ret->ia_src.s_addr = src.s_addr;
-  ret->ia_dst.s_addr = dst.s_addr;
+  ret->src = addr_str(&src, sport);
+  ret->dst = addr_str(&dst, dport);
+  addr_assign(&ret->ia_src, &src);
+  addr_assign(&(ret->ia_dst), &dst);
   ret->smask = ret->dmask = 32;
  }
  
@@ -346,14 +348,14 @@ standard_output(output, status)
 		char * net = " (network)";
 		char * s, *d;
 		char * empty = "";
-		if(opt_B && (output->ia_sorig.s_addr == 
-		   output->s_bcast.s_addr)&& (output->smask <32))s = bcast;
+		if(opt_B && addr_equal(&(output->ia_sorig), &(output->s_bcast))
+			     && (output->smask <32))s = bcast;
 		   else 
 		 {
-		  struct in_addr net_a = get_net(output->ia_src, output->smask);
+		  struct ip_addr net_a = get_net(&(output->ia_src),
+						 output->smask);
 		  
-		  if(opt_B && (output->ia_sorig.s_addr ==
-		     net_a.s_addr)&&
+		  if(opt_B && addr_equal(&(output->ia_sorig), &(net_a))&&
 		     (output->smask < 32)&&
 		     (output->smask > 0))s=net;
 			
@@ -361,15 +363,14 @@ standard_output(output, status)
 		 }
 		 
 		 
-		if(opt_B && (output->ia_dorig.s_addr ==
-		   output->d_bcast.s_addr)&&
+		if(opt_B && addr_equal(&(output->ia_dorig),&(output->d_bcast))&&
 		   (output->dmask < 32))d = bcast;
 		 else
 		 {
-		  struct in_addr net_a = get_net(output->ia_dst, output->dmask);
+		  struct ip_addr net_a = get_net(&(output->ia_dst),
+						 output->dmask);
 		  
-		  if(opt_B && (output->ia_dorig.s_addr ==
-		     net_a.s_addr)&&
+		  if(opt_B && addr_equal(&(output->ia_dorig), &(net_a))&&
 		     (output->dmask < 32)&&
 		     (output->smask > 0))d=net; 
 		  else d = empty;

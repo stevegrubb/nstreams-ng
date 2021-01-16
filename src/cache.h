@@ -3,8 +3,8 @@
 
 struct cache {
 	char * name;
-	struct in_addr src;
-	struct in_addr dst;
+	struct ip_addr src;
+	struct ip_addr dst;
 	u_short sport;
 	u_short dport;
 	int proto;

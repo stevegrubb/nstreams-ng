@@ -24,27 +24,6 @@
 #include <pcap.h>
 #include "parse_tcpdump.h"
 
-struct bogus_iphdr
-  {
-#ifndef WORDS_BIGENDIAN
-    unsigned int ihl:4;
-    unsigned int version:4;
-#else
-    unsigned int version:4;
-    unsigned int ihl:4;
-#endif
-    u_char tos;
-    u_short tot_len;
-    u_short id;
-    u_short frag_off;
-    u_char ttl;
-    u_char protocol;
-    u_short check;
-    u_int saddr;
-    u_int daddr;
- };
-
-
 /*
  * pcap packet to a tcpdump struct
  */
@@ -53,15 +32,13 @@ parse_pcap_entry(data)
  u_char * data;
 {
  struct tcpdump * ret = malloc(sizeof(struct tcpdump));
- struct bogus_iphdr * ip = (struct bogus_iphdr*)(data);
+ struct iphdr * ip = (struct iphdr*)(data);
  bzero(ret, sizeof(*ret));
 
  /*
   * Check that we have an IPv4 packet
   */
-
- if(ip->version!=0x04) {
-    fprintf(stderr, "ip version isn't 4...packet not decoded\n"); goto stop;}
+ if(ip->version == 0x04) {
 #ifdef DEBUG
 #define UNFIX(x) ntohs(x)
     printf("\tip_hl : %d\n", ip->ihl);
@@ -89,18 +66,19 @@ parse_pcap_entry(data)
     printf("\n"); 
     printf("data[20] : %d\n", data[20]);
 #endif 
- /*
-  * Get the source and destination adresses
-  */
-  ret->src.s_addr = ip->saddr;
-  ret->dst.s_addr = ip->daddr;
-  
+  /*
+   * Get the source and destination addresses
+   */
+  ret->src.fam = AF_INET;
+  ret->src.addr.ipv4_addr.s_addr = ip->saddr;
+  ret->dst.fam = AF_INET;
+  ret->dst.addr.ipv4_addr.s_addr = ip->daddr;
   ret->proto = ip->protocol;
+
   switch(ret->proto)
   {
    case IPPROTO_TCP :
    	{
-	//struct bogus_tcphdr * tcp = (struct bogus_tcphdr*)(data + ip->ihl*4);
 	u_short * sport, * dport;
 	u_char * flags;
 	
@@ -118,7 +96,8 @@ parse_pcap_entry(data)
         break;
       }
    case IPPROTO_UDP :
-   	{
+   case IPPROTO_UDPLITE :
+	{
 	 u_short * sport, * dport;
 	 
 	 sport = (u_short*)(data + ip->ihl*4);
@@ -138,10 +117,33 @@ parse_pcap_entry(data)
 	ret->ports[1] = *c;
 	break;
       }
-    } 
-  
-  return(ret);
-  
+   case IPPROTO_IGMP:
+	ret->ports[0] = 0;
+	ret->ports[1] = 0;
+	break;
+  default:
+       printf("proto:%d\n", ret->proto);
+    }
+ } else if (ip->version == 0x06) { /* IPv6 */
+  struct ip6_hdr *nip = (struct ip6_hdr*)(data);
+  /*
+   * Get the source and destination addresses
+   */
+  ret->src.fam = AF_INET6;
+  memcpy(&ret->src.addr.ipv6_addr, &nip->ip6_src, sizeof(struct in6_addr));
+  ret->dst.fam = AF_INET6;
+  memcpy(&ret->dst.addr.ipv6_addr, &nip->ip6_dst, sizeof(struct in6_addr));
+  ret->proto = nip->ip6_ctlun.ip6_un1.ip6_un1_nxt;
+
+   ret->ports[0] = 0;
+   ret->ports[1] = 0;
+ } else {
+   if (ret->proto)
+     fprintf(stderr, "ip version %d isn't known...packet not decoded\n",
+	     ret->proto);
+   goto stop;
+ }
+ return(ret);
 
 stop :
  free(ret);

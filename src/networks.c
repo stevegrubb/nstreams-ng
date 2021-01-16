@@ -38,16 +38,28 @@
  *
  * ie : 192.168.1.12/24 --> 192.168.1.0
  */
-struct in_addr 
+struct ip_addr 
 get_net(addr, mask)
- 	struct in_addr addr;
+	struct ip_addr *addr;
 	int mask;
 {
- struct in_addr net_a;
- 
- net_a.s_addr = ntohl(addr.s_addr) >> (32 - mask);
- net_a.s_addr = htonl(net_a.s_addr << (32 - mask));
- return(net_a);
+ struct ip_addr net_a;	// probably should malloc this
+
+ if (addr->fam == AF_INET) {
+   net_a.addr.ipv4_addr.s_addr = ntohl(addr->addr.ipv4_addr.s_addr) >>
+					(32 - mask);
+   net_a.addr.ipv4_addr.s_addr = htonl(net_a.addr.ipv4_addr.s_addr <<
+					(32 - mask));
+   net_a.fam = AF_INET;
+ } else if (addr->fam == AF_INET6) {
+	 // FIXME
+	 memset(&net_a.addr.ipv6_addr, 0, sizeof(struct in6_addr));
+	 net_a.fam = AF_INET6;
+ } else {
+	 // FIXME
+	 ;
+ }
+ return net_a;
 }
 
 /*
@@ -55,15 +67,24 @@ get_net(addr, mask)
  *
  * ie : 192.168.1.12/24 --> 192.168.1.255
  */
-struct in_addr
+struct ip_addr
 get_broadcast(addr, mask)
-	struct in_addr addr;
+	struct ip_addr *addr;
 	int mask;
 {
- struct in_addr net_a;
- 
-  net_a.s_addr = (ntohl(addr.s_addr) >> (32 - mask)) + 1;
-  net_a.s_addr = htonl((net_a.s_addr << (32 - mask)) - 1);
+ struct ip_addr net_a; //probably should malloc this
+
+ if (addr->fam == AF_INET) {
+   net_a.addr.ipv4_addr.s_addr = (ntohl(addr->addr.ipv4_addr.s_addr) >> (32 - mask)) + 1;
+   net_a.addr.ipv4_addr.s_addr = htonl((net_a.addr.ipv4_addr.s_addr << (32 - mask)) - 1);
+   net_a.fam = AF_INET;
+ } else if (addr->fam == AF_INET6) {
+   // FIXME
+   memset(&net_a.addr.ipv6_addr, 0, sizeof(struct in6_addr));
+   net_a.fam = AF_INET6;
+ } else {
+	 ;
+ }
   return(net_a);
 }
 
@@ -168,13 +189,13 @@ read_networks(fd)
     * convert the IP to the network IP (using the
     * mask
     */
-   n->addr = get_net(n->addr, n->mask);
+   n->addr = get_net(&n->addr, n->mask);
    
    /*
     * and have a copy of the ascii version of the network
     * IP around
     */
-   n->asc_addr = strdup(inet_ntoa(n->addr));
+   n->asc_addr = addr_str(&n->addr, 0);
    
    old = n;
    /* prepare memory for the next entry */
@@ -229,10 +250,10 @@ int get_network_mask(nets, name, numeric)
  */
 char * ip_to_network(nets, ip,numeric)
  struct network * nets;
- struct in_addr ip;
+ struct ip_addr ip;
  int numeric;
 {
- struct in_addr i;
+ struct ip_addr i;
  struct network * match = NULL;
  
  /*
@@ -249,9 +270,9 @@ char * ip_to_network(nets, ip,numeric)
   	if(numeric)return(nets->asc_addr);
 	else return(nets->name);
 	}
-  i.s_addr = ip.s_addr;
-  ip = get_net(ip, nets->mask);
-  if(ip.s_addr == nets->addr.s_addr){
+  addr_assign(&i, &ip);
+  ip = get_net(&ip, nets->mask);
+  if(addr_equal(&ip, &(nets->addr))){
 #ifdef USELESS_FEATURE
   	if(nets->mask == 32)match = nets;
 	else 
@@ -262,7 +283,7 @@ char * ip_to_network(nets, ip,numeric)
 	 }
 	}
   nets = nets->next;
-  ip.s_addr = i.s_addr;
+  addr_assign(&ip, &i);
  }
  
  if(match)
@@ -273,7 +294,7 @@ char * ip_to_network(nets, ip,numeric)
  /*
   * Nothing matched - return the IP
   */
- return(inet_ntoa(ip));
+ return(addr_str(&ip, 0));
 }
 
 
@@ -282,14 +303,15 @@ char * ip_to_network(nets, ip,numeric)
  * If <numeric> is set to 1, then return
  * the IP adress of the network in ascii
  */
-struct in_addr 
+struct ip_addr
 get_network_ip(nets, name,numeric)
  struct network * nets;
  char * name;
  int numeric;
 {
- struct in_addr nothing;
- nothing.s_addr = 0;
+ struct ip_addr nothing;
+ nothing.fam = AF_INET;
+ nothing.addr.ipv4_addr.s_addr = 0;
  while(nets)
  {
   if(numeric){if(!strcmp(nets->asc_addr, name))return(nets->addr);}
@@ -298,3 +320,52 @@ get_network_ip(nets, name,numeric)
  }
  return(nothing);
 }
+
+int addr_equal(struct ip_addr *a1, struct ip_addr *a2)
+{
+	if (a1->fam == a2->fam) {
+		if (a1->fam == AF_INET)
+			return a1->addr.ipv4_addr.s_addr ==
+						a2->addr.ipv4_addr.s_addr;
+		else if (a1->fam == AF_INET6)
+			return IN6_ARE_ADDR_EQUAL(&(a1->addr.ipv6_addr),
+					   &(a2->addr.ipv6_addr));
+		else
+			return 0; // What could this be?
+	} else
+		return 0;
+}
+
+union xsockaddr {
+   struct sockaddr     sa;
+   struct sockaddr_in  sa_in;
+   struct sockaddr_in6 sa_in6;
+   char                pad[128];
+};
+
+char *addr_str(struct ip_addr *a1, int port)
+{
+	char name[NI_MAXHOST];
+	unsigned int len = 0;
+	union xsockaddr addr;
+
+	addr.sa_in.sin_family = a1->fam;
+	addr.sa_in.sin_port = port;
+
+	if (a1->fam == AF_INET) {
+		len = sizeof(struct sockaddr_in);
+		addr.sa_in.sin_addr = a1->addr.ipv4_addr;
+	} else if (a1->fam == AF_INET6) {
+		len = sizeof(struct sockaddr_in6);
+		memcpy(&addr.sa_in6.sin6_addr, &(a1->addr.ipv6_addr),
+		       len);
+	}
+
+	// We use the ipv6 address but they should be the same address
+	if (getnameinfo(&addr, len, name,
+			 NI_MAXHOST, NULL, 0, NI_NUMERICHOST ) )
+		return strdup("<unknown address>");
+
+	return strdup(name);
+}
+

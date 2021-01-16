@@ -501,7 +501,7 @@ main(argc, argv)
       * don't show the intra-network traffic
       * except if we are asked to
       */
-     if(output->ia_dst.s_addr == output->ia_src.s_addr)
+     if(addr_equal(&(output->ia_dst), &(output->ia_src)))
      {
       if(!(i+I)){
      	free(dump);
@@ -509,18 +509,18 @@ main(argc, argv)
 	continue; 
 	}
       else intra++;
-      output->ia_dst.s_addr = dump->dst.s_addr;
-      output->ia_src.s_addr = dump->src.s_addr;
+      addr_assign(&(output->ia_dst), &(dump->dst));
+      addr_assign(&(output->ia_src), &(dump->src));
       free(output->src);
       free(output->dst);
-      output->src = strdup(inet_ntoa(dump->src));
-      output->dst = strdup(inet_ntoa(dump->dst));
+      output->src = addr_str(&dump->src, dump->ports[0]);
+      output->dst = addr_str(&dump->dst, dump->ports[1]);
      }
      else
      {
-     dump->src.s_addr = output->ia_src.s_addr;
-     dump->dst.s_addr = output->ia_dst.s_addr;
-     } 
+     addr_assign(&(dump->src), &(output->ia_src));
+     addr_assign(&(dump->dst), &(output->ia_dst));
+     }
      if(c)name = c->name;
     
     
