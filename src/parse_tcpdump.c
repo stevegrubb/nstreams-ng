@@ -142,6 +142,7 @@ struct tcpdump * parse_tcpdump_line(orig)
  t = strchr(t+1, '>');
  if(!t){
  	free(str);
+	free(src);
 	free(ret);
 	return(NULL);
 	}
@@ -149,6 +150,7 @@ struct tcpdump * parse_tcpdump_line(orig)
  s = strchr(t, ':');
  if(!s){
  	free(str);
+	free(src);
 	free(ret);
 	return(NULL);
 	}

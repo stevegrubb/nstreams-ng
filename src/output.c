@@ -289,8 +289,16 @@ void ipchains_output(output, status)
      {
       int unknown = !strcmp(output->serv_name, "unknown");
       
-      if(unknown && opt_u)return;
-      if(!unknown && opt_U)return;
+      if (unknown && opt_u) {
+	      free(c_sports);
+	      free(c_dports);
+	      return;
+      }
+      if (!unknown && opt_U) {
+	      free(c_sports);
+	      free(c_dports);
+	      return;
+      }
       printf("# Accept %s\n\n", output->serv_name);
       /*
        * Outside --> inside

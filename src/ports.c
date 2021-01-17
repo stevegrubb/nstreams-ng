@@ -178,6 +178,8 @@ while((p = (char *)strchr(expr,','))) {
    
   if(start < 0)start = 0;
   if(start > end){
+	free(mem);
+	free(ports);
 	return(NULL); /* invalid spec */
 	}
   for(j=start; j <= end; j++) 
@@ -195,7 +197,11 @@ else {
 }
 
 
-if (start < 0 || start > end) return(NULL);
+if (start < 0 || start > end) {
+	free(mem);
+	free(ports);
+	return(NULL);
+}
 for(j=start; j <= end; j++) 
   ports[i++] = j;
   
