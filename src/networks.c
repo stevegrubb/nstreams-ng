@@ -349,6 +349,7 @@ char *addr_str(struct ip_addr *a1, int port)
 	unsigned int len = 0;
 	union xsockaddr addr;
 
+	memset(&addr, 0, sizeof(union xsockaddr));
 	addr.sa_in.sin_family = a1->fam;
 	addr.sa_in.sin_port = port;
 
@@ -362,8 +363,8 @@ char *addr_str(struct ip_addr *a1, int port)
 	}
 
 	// We use the ipv6 address but they should be the same address
-	if (getnameinfo(&addr, len, name,
-			 NI_MAXHOST, NULL, 0, NI_NUMERICHOST ) )
+	if (getnameinfo((const struct sockaddr *) &addr, len, name,
+			 NI_MAXHOST, NULL, 0, NI_NUMERICHOST))
 		return strdup("<unknown address>");
 
 	return strdup(name);
