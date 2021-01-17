@@ -356,9 +356,9 @@ char *addr_str(struct ip_addr *a1, int port)
 		len = sizeof(struct sockaddr_in);
 		addr.sa_in.sin_addr = a1->addr.ipv4_addr;
 	} else if (a1->fam == AF_INET6) {
-		len = sizeof(struct in6_addr);
+		len = sizeof(struct sockaddr_in6);
 		memcpy(&addr.sa_in6.sin6_addr, &(a1->addr.ipv6_addr),
-		       len);
+		       sizeof(struct in6_addr));
 	}
 
 	// We use the ipv6 address but they should be the same address
