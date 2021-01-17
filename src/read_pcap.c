@@ -135,6 +135,11 @@ parse_pcap_entry(data)
   memcpy(&ret->dst.addr.ipv6_addr, &nip->ip6_dst, sizeof(struct in6_addr));
   ret->proto = nip->ip6_ctlun.ip6_un1.ip6_un1_nxt;
 
+  /*
+   * FIXME: Getting the ports is not straightforward. Might want to look
+   * at the parsing in net/ipv6/output_core.c. In particular, look at the
+   * ip6_find_1stfragopt function and it's while loop.
+   */
    ret->ports[0] = 0;
    ret->ports[1] = 0;
  } else {
