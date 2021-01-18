@@ -18,4 +18,4 @@ To use it do:
 nstreams -l <interface>
 ```
 
-It does not support IPv6 at the moment, but that is being actively worked.
+It does not fully support IPv6 at the moment, port information is missing.
