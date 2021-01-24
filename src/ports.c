@@ -31,7 +31,7 @@
  *	- functions to determine quickly whether a value is
  *	  in an array
  */
- 
+
 #include <includes.h>
 #include "ports.h"
 
@@ -41,12 +41,12 @@
  * see later in this file
  */
 struct port_range {
-	char * name;
+	char *name;
 	int num;
-	u_short * data;
-	struct port_range * next;
-	};
-struct port_range * PortRange = NULL;	
+	u_short *data;
+	struct port_range *next;
+};
+struct port_range *PortRange = NULL;	
 
 
 
@@ -67,151 +67,170 @@ struct port_range * PortRange = NULL;
  * will return the pointer we created before.
  *
  */
- 
-u_short * getports(char * expr, int * num)
+
+u_short *getports(const char *expr, int *num)
 {
- int n=0;
- u_short * ret=NULL;
- struct port_range * pr;
- struct port_range * p;
- 
- 
- /* 
-  * did we already convert this expression to an array
-  * of ports ?
-  */
- if(PortRange)
- {
-  struct port_range * pr = PortRange;
-  while(pr)
-  {
-   if(!strcmp(pr->name, expr))
-   {
-    /*
-     * We did. So we return what we had converted the
-     * first time
-     */
-    *num = pr->num;
-    return(pr->data);
-   }
-   pr = pr->next;
-  }
- }
+	int n = 0;
+	u_short *ret = NULL;
+	struct port_range *pr;
+	struct port_range *p;
 
 
-  /*
-   * we have never converted this expression to
-   * an array of port. Let's do it.
-   */
-  ret = getpts(expr, &n);
-  
-  /*
-   * add the result of this conversion to
-   * our structure
-   */
-  pr = malloc(sizeof(struct port_range));
-  bzero(pr, sizeof(struct port_range));
-  pr->name = strdup(expr);
-  pr->data = ret;
-  pr->num = n;
-  if(!PortRange)PortRange = pr;
-  else {
-  	p = PortRange;
-	while(p->next)p=p->next;
-	p->next = pr;
+	/*
+	 * did we already convert this expression to an array
+	 * of ports ?
+	 */
+	if (PortRange) {
+		pr = PortRange;
+		while (pr) {
+			if (!strcmp(pr->name, expr)) {
+				/*
+				 * We did. So we return what we had converted
+				 * the first time
+				 */
+				*num = pr->num;
+				return pr->data;
+			}
+			pr = pr->next;
+		}
 	}
-  *num=n;
-  return(ret);
+
+
+	/*
+	 * we have never converted this expression to
+	 * an array of port. Let's do it.
+	 */
+	ret = getpts(expr, &n);
+
+	/*
+	 * add the result of this conversion to
+	 * our structure
+	 */
+	pr = malloc(sizeof(struct port_range));
+	bzero(pr, sizeof(struct port_range));
+	pr->name = strdup(expr);
+	pr->data = ret;
+	pr->num = n;
+	if (!PortRange)
+		PortRange = pr;
+	else {
+		p = PortRange;
+		while (p->next)
+			p = p->next;
+		p->next = pr;
+	}
+	*num = n;
+	return ret;
 }
- 
- 
+
+
 /*
  * comparison function used in qsort()
  */
-int compar(const void* a, const void* b)
+int compar(const void *a, const void *b)
 {
- u_short *aa = (u_short*)a;
- u_short *bb = (u_short*)b;
- 
- return(*aa-*bb);
-} 
+	u_short *aa = (u_short *)a;
+	u_short *bb = (u_short *)b;
+
+	return *aa-*bb;
+}
 /*
  * getpts()
- * 
+ *
  * This function is (c) Fyodor <fyodor@dhp.com> and was taken from
  * his excellent and outstanding scanner Nmap
- * See http://www.insecure.org/nmap/ for details about 
+ * See http://www.insecure.org/nmap/ for details about
  * Nmap
  */
-static char * all = "1-65535";
+static const char *all = "1-65535";
 
 
-/* Convert a string like "-100,200-1024,3000-4000,60000-" into an array 
+/* Convert a string like "-100,200-1024,3000-4000,60000-" into an array
    of port numbers*/
-unsigned short *getpts(char *origexpr, int * num) {
-int exlen ;
-char *p,*q;
-unsigned short *tmp, *ports;
-int i=0, j=0,start,end;
-char *expr;
-char *mem;
+unsigned short *getpts(const char *origexpr, int *num)
+{
+	unsigned int exlen, i, j;
+	int start, end;
+	char *p, *q;
+	unsigned short *tmp, *ports;
+	char *expr;
+	char *mem;
 
-if(!strcmp(origexpr, "any"))origexpr = all;
-expr = strdup(origexpr);
-exlen = strlen(origexpr);
-mem = expr;
+	if (!strcmp(origexpr, "any"))
+		origexpr = all;
+	expr = strdup(origexpr);
+	exlen = strlen(origexpr);
+	mem = expr;
 
-ports = malloc(65536 * sizeof(short));
-for(;j < exlen; j++) 
-  if (expr[j] != ' ') expr[i++] = expr[j]; 
-expr[i] = '\0';
-exlen = i;
-i=0;
-while((p = (char *)strchr(expr,','))) {
-  *p = '\0';
-  if (*expr == '-') {start = 1; end = atoi(expr+ 1);}
-  else {
-    start = end = atoi(expr);
-    if ((q = (char*)strchr(expr,'-')) && *(q+1) ) end = atoi(q + 1);
-    else if (q && !*(q+1)) end = 65535;
-  }
-   
-  if(start < 0)start = 0;
-  if(start > end){
-	free(mem);
-	free(ports);
-	return(NULL); /* invalid spec */
+	ports = malloc(65536 * sizeof(short));
+	for(j=0, i=0; j < exlen; j++) {
+		if (expr[j] != ' ')
+			expr[i++] = expr[j];
 	}
-  for(j=start; j <= end; j++) 
-    ports[i++] = j;
-  expr = p + 1;
-}
-if (*expr == '-') {
-  start = 1;
-  end = atoi(expr+ 1);
-}
-else {
-  start = end = atoi(expr);
-  if ((q =  (char*)strchr(expr,'-')) && *(q+1) ) end = atoi(q+1);
-  else if (q && !*(q+1)) end = 65535;
-}
+	expr[i] = '\0';
+	exlen = i;
+	i = 0;
+	while ((p = (char *)strchr(expr,','))) {
+		*p = '\0';
+		if (*expr == '-') {
+			start = 1;
+			end = strtol(expr+ 1, NULL, 10);
+		} else {
+			start = end = strtol(expr, NULL, 10);
+			if ((q = (char*)strchr(expr,'-')) && *(q+1) )
+				end = strtol(q + 1, NULL, 10);
+			else if (q && !*(q+1))
+				end = 65535;
+		}
 
+		if (start < 0)
+			start = 0;
+		if (end < 0)
+			end = 0;
+		if (start > 65535)
+			start = 65535;
+		if (end > 65535)
+			end = 65535;
+		if (start > end) {
+			free(mem);
+			free(ports);
+			return NULL; /* invalid spec */
+		}
+		for (j=start; j <= (unsigned)end; j++)
+			ports[i++] = j;
+		expr = p + 1;
+	}
+	if (*expr == '-') {
+		start = 1;
+		end = strtol(expr+ 1, NULL, 10);
+	} else {
+		start = end = strtol(expr, NULL, 10);
+		if ((q =  (char*)strchr(expr,'-')) && *(q+1))
+			end = strtol(q+1, NULL, 10);
+		else if (q && !*(q+1))
+			end = 65535;
+	}
 
-if (start < 0 || start > end) {
+	if (end < 0)
+		end = 0;
+	if(start > 65535)
+		start = 65535;
+	if (end > 65535)
+		end = 65535;
+	if (start < 0 || start > end) {
+		free(mem);
+		free(ports);
+		return NULL;
+	}
+	for (j=start; j <= (unsigned)end; j++)
+		ports[i++] = j;
+
+	tmp = realloc(ports, (i+1) * sizeof(short));
+	*num = i;
+	qsort(tmp, i, sizeof(u_short), compar);
+
 	free(mem);
-	free(ports);
-	return(NULL);
-}
-for(j=start; j <= end; j++) 
-  ports[i++] = j;
-  
-tmp = realloc(ports, (i+1) * sizeof(short));
-*num = i;
-qsort(tmp, i, sizeof(u_short), compar);
- 
- 
-free(mem);
-return tmp;
+	return tmp;
 }
 
 
@@ -221,37 +240,38 @@ return tmp;
  * Determine is <port> is in <ports>, recursively. In less than 15
  * comparisons for 65535 elements.
  */
-int rec_pip(port, ports, s, e)
-	u_short port;
-	u_short * ports;
-	int s, e;
+bool rec_pip(u_short port, u_short *ports, unsigned int s, unsigned int e)
 {
- if(s==e)return(ports[s]==port);
- else {
-  int mid = (e + s) / 2;
-  if(port > ports[mid])return(rec_pip(port, ports, mid+1, e));
-  else return(rec_pip(port, ports, s, mid));
-  }
+	if (s == e)
+		return (ports[s] == port);
+	else {
+		unsigned int mid = (e + s) / 2;
+		if (port > ports[mid])
+			return (rec_pip(port, ports, mid+1, e));
+
+		return (rec_pip(port, ports, s, mid));
+	}
 }
 
 
 /*
- * is a port in our port list ? 
+ * is a port in our port list ?
  *
  * We use the function rec_pip(), which is
  * recursive, and which will determine if
  * a port is present by dichotomy.
  *
  */
-int port_in_ports(port, ports, len)
-	u_short port;
-	u_short * ports;
-	int len;
+bool port_in_ports(u_short port, u_short *ports, unsigned int len)
 {
- int mid = (len-1) / 2;
- int ret;
- 
- if(port > ports[mid])ret = rec_pip(port, ports, mid, len);
- else ret = rec_pip(port, ports, 0, mid);
- return(ret);
+	unsigned int mid = (len-1) / 2;
+	int ret;
+
+	if (port > ports[mid])
+		ret = rec_pip(port, ports, mid, len);
+	else
+		ret = rec_pip(port, ports, 0, mid);
+
+	return ret;
 }
+

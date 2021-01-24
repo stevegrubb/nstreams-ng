@@ -46,13 +46,13 @@ static int count_dots(char *str)
 /*
  * converts 1.2.3.4.5 to {1.2.3.4, port = 5}
  */
-static struct ip_addr ascaddr2intaddr(char *addr, int *port, char *proto)
+static struct ip_addr ascaddr2intaddr(char *addr, u_short *port, char *proto)
 {
 	int num = count_dots(addr);
 	struct ip_addr ret;
 	if (num == 4) {
 		char *s =  strrchr(addr, '.');
-		int p;
+		u_short p;
 		s[0] = 0;
 		p = atoi(s+1);
 		if (!p && strcmp(s+1, "0")) {
