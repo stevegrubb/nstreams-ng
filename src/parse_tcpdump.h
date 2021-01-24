@@ -5,11 +5,11 @@
 #include <netinet/ip6.h>
 
 struct ip_addr {
-   uint8_t fam; // socket family type
-   union {
-       struct in_addr ipv4_addr;
-       struct in6_addr ipv6_addr;
-   }addr;
+	uint8_t fam; // socket family type
+	union {
+		struct in_addr ipv4_addr;
+		struct in6_addr ipv6_addr;
+	}addr;
 };
 
 struct tcpdump {
@@ -19,7 +19,7 @@ struct tcpdump {
 	u_short ports[2]; /* sport and dport (udp/tcp),
 			     type & code (icmp) */
 	int flags;
-	};
+};
 
 /*
  * TCP flags
@@ -39,6 +39,7 @@ struct tcpdump {
 #define NS_ICMP_UNREACH 3
 #define NS_ICMP_TIMXCEED 11
 #define NS_ICMP_TIMXCEED_IN_TRANSIT 0
-struct tcpdump * parse_tcpdump_line(char *);
+
+struct tcpdump *parse_tcpdump_line(char *orig);
 
 #endif

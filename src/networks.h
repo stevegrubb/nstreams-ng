@@ -4,17 +4,17 @@
 #include "parse_tcpdump.h"
 
 struct network {
-  	char * name;
-	char * asc_addr;
+	char *name;
+	char *asc_addr;
 	struct ip_addr addr;
 	int mask;
-	struct network * next;
-	};
-	
-struct network * read_networks(FILE *);
+	struct network *next;
+};
+
+struct network *read_networks(FILE *);
 void free_networks(struct network *n);
-char * ip_to_network(struct network*, struct ip_addr,int);
-struct ip_addr  get_network_ip(struct network*, char *,int);
+char *ip_to_network(struct network *, struct ip_addr, int);
+struct ip_addr get_network_ip(struct network *, char *, int);
 int get_network_mask(struct network *, char *,int);
 struct ip_addr get_net(struct ip_addr *, int);
 struct ip_addr get_broadcast(struct ip_addr *, int);
