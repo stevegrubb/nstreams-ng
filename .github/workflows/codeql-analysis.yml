@@ -45,7 +45,7 @@ jobs:
       run: cat /etc/fedora-release
 
     - name: install dependencies
-      run: dnf -y install autoconf automake libtool gcc libpcap-devel
+      run: dnf -y install autoconf automake libtool gcc libpcap-devel which git
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
