@@ -54,7 +54,7 @@ struct ip_addr get_net(struct ip_addr *addr, int mask)
 		net_a.fam = AF_INET6;
 	} else {
 		// FIXME
-		;
+		memset(&net_a, 0, sizeof(struct ip_addr));
 	}
 	return net_a;
 }
@@ -79,7 +79,8 @@ struct ip_addr get_broadcast(struct ip_addr *addr, int mask)
 		memset(&net_a.addr.ipv6_addr, 0, sizeof(struct in6_addr));
 		net_a.fam = AF_INET6;
 	} else {
-		;
+		// FIXME
+		memset(&net_a, 0, sizeof(struct ip_addr));
 	}
 	return net_a;
 }
@@ -212,6 +213,9 @@ void free_networks(struct network *n)
 {
 	struct network *next;
 
+	if (n == NULL)
+		return;
+
 	do {
 		next = n->next;
 		free(n->asc_addr);
@@ -289,6 +293,7 @@ char *ip_to_network(struct network *nets, struct ip_addr ip, int numeric)
 	}
 	/*
 	 * Nothing matched - return the IP
+	 * FIXME: This leaks memory
 	 */
 	return addr_str(&ip, 0);
 }
@@ -337,6 +342,9 @@ union xsockaddr {
 	char                pad[128];
 };
 
+/*
+ *  This returns memory that needs to be freed by the caller
+ */
 char *addr_str(struct ip_addr *a1, int port)
 {
 	char name[NI_MAXHOST];

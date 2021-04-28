@@ -127,9 +127,11 @@ struct tcpdump *parse_tcpdump_line(char *orig)
 	if ((s[1] == '>')||(s[1] == '<')) {
 		s += 2;
 		t[0] = ' ';
-		t = strchr(t+1, ' ');
-		if (t)
+		char *t2 = strchr(t+1, ' ');
+		if (t2) {
+			t = t2;
 			t[0] = 0;
+		}
 	}
 	src = strdup(s+1);
 

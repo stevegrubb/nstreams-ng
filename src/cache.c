@@ -104,6 +104,9 @@ void free_cache(struct cache *c)
 {
 	struct cache *next;
 
+	if (c == NULL)
+		return;
+
 	do {
 		next = c->next;
 		free(c);
