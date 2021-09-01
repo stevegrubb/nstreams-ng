@@ -5,9 +5,10 @@
 #
 # Popular icmp codes
 #
-icmp-echo-request:8/icmp:0
 icmp-echo-reply:0/icmp:0
 icmp-unreach:3/icmp:0-255
+icmp-redirect:5/icmp:0
+icmp-echo-request:8/icmp:0
 icmp-time exceeded in transit:11/icmp:0
 
 #
@@ -129,6 +130,7 @@ netbios-ssn (tcp):139/tcp:1024-65535
 # IMAP
 #
 imap:143/tcp:1024-65535
+imaps:993/tcp:1024-65535
 
 #
 # SNMP
@@ -160,11 +162,16 @@ imap3-udp:220/udp:1024-65535
 ldap:389/tcp:1024-65535
 ldap-udp:389/udp:1024-65535
 
+#
+# Service Location Protocol
+#
+Service-Location-Proto (udp):427/udp:1024-65535
 
 #
 # HTTPS
 #
 https:443/tcp:1024-65535
+https (udp):443/udp:1024-65535
 
 
 #
@@ -208,6 +215,11 @@ radius-acct-tcp:1813/tcp:1024-65535
 radius-acct:1813/udp:1024-65535
 
 #
+# UPnP
+#
+UPnP (udp):1900/udp:1024-65535
+
+#
 # NFS
 #
 nfs:2049/udp:1024-65535
@@ -218,6 +230,10 @@ nfs:2049/udp:1024-65535
 #
 cvs-pserver:2401/tcp:1024-65535
 
+#
+# Web Service Discovery
+#
+WS-Discovery (udp):3702/udp:1024-65535
 
 #
 # ICQ or terabase
@@ -225,11 +241,14 @@ cvs-pserver:2401/tcp:1024-65535
 icq (or terabase):4000/tcp:1024-65535
 
 #
-# Multicast DNS
+# mDNS
 #
-mdns:5353/tcp:1024-65535
-mdns-udp:5353/udp:1024-65535
+mDNS (udp):5353/udp:5353
 
+#
+#Link Local Multicast Name Resolution
+#
+Link-Local-mnr:5355/udp:1024-65535
 
 #
 # X Windows
@@ -247,10 +266,6 @@ irc:6665-6670/tcp:1024-65535
 #
 real-audio-tcp:7070/tcp:1024-65535
 
-#
-# vcom-tunnel
-#
-vcom-tunnel:8001/udp:8001
 
 #
 # http proxy
@@ -261,6 +276,11 @@ http-proxy:8080/tcp:1024-65535
 # HP Jetdirect 
 #
 jetdirect:9100/tcp:any
+
+#
+# Filesphere?
+#
+devialet-speaker-discovery:24242/udp:24242
 
 # 
 # Popular Windows backdoors
