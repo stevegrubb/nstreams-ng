@@ -225,6 +225,13 @@ cvs-pserver:2401/tcp:1024-65535
 icq (or terabase):4000/tcp:1024-65535
 
 #
+# Multicast DNS
+#
+mdns:5353/tcp:1024-65535
+mdns-udp:5353/udp:1024-65535
+
+
+#
 # X Windows
 #
 x11:6000/tcp:any
