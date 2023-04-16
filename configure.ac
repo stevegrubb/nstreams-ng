@@ -4,9 +4,9 @@ dnl
 
 
 AC_REVISION($Revision: 1.3 $)dnl
-AC_INIT(nstreams-ng, 1.1)
-AC_PREREQ(2.12)dnl
-AM_CONFIG_HEADER(config.h)
+AC_INIT([nstreams-ng],[1.1])
+AC_PREREQ([2.50])dnl
+AM_CONFIG_HEADER([config.h])
 
 echo Configuring nstreams-ng $VERSION
 
@@ -28,14 +28,15 @@ AC_CHECK_HEADERS(errno.h sys/types.h netinet/in.h sys/socket.h netdb.h \
 arpa/inet.h string.h signal.h netinet/in_systm.h sys/types.h sys/time.h \
 unistd.h ctype.h getopt.h)
 
-AC_CHECK_LIB(pcap, pcap_open_live,,AC_ERROR("*** You need the pcap library"))
+AC_CHECK_LIB(pcap, pcap_open_live,,AC_MSG_ERROR("*** You need the pcap library"))
 
 AC_CHECK_FUNCS(bzero inet_ntoa)
 
 AC_DEFINE_UNQUOTED(ETC_NSTREAMS_NETWORKS, "${sysconfdir}/nstreams-networks", [Networks database])
 AC_DEFINE_UNQUOTED(ETC_NSTREAMS_SERVICES, "${sysconfdir}/nstreams-services", [Services database])
 
-AC_OUTPUT(Makefile src/Makefile docs/Makefile)
+AC_CONFIG_FILES([Makefile src/Makefile docs/Makefile])
+AC_OUTPUT
 
 echo .
 echo "
