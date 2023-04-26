@@ -17,6 +17,14 @@ icmpv6-echo-request:128/icmpv6:0
 icmpv6-echo-reply:129/icmpv6:0
 
 #
+# IGMP
+#
+igmp-membership-query:17/igmp:0
+igmpv1-membership-report:18/igmp:0
+igmpv2-membership-report:22/igmp:0
+igmpv2-leave-group:23/igmp:0
+
+#
 # FTP
 #
 ftp-data:20/tcp:1024-65535
@@ -244,6 +252,11 @@ WS-Discovery (udp):3702/udp:1024-65535
 # ICQ or terabase
 #
 icq (or terabase):4000/tcp:1024-65535
+
+#
+# Google Play Store
+#
+Google Playstore:5228/tcp:1024-65535
 
 #
 # mDNS

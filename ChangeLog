@@ -1,3 +1,6 @@
+1.2
+- Improve Ipv6 and IGMP support
+
 1.1
 - Fork from original code
 - Redo autocon/automake code

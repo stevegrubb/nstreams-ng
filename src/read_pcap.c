@@ -25,6 +25,7 @@
 #include <netinet/tcp.h>
 #include <netinet/udp.h>
 #include <netinet/ether.h>
+#include <netinet/igmp.h>
 #include "parse_tcpdump.h"
 #include "read_pcap.h"
 
@@ -124,8 +125,18 @@ struct tcpdump *parse_pcap_entry(const u_char *data, const struct pcap_pkthdr *h
 				break;
 			}
 		case IPPROTO_IGMP:
-			ret->ports[0] = 0;
-			ret->ports[1] = 0;
+			{
+				const struct iphdr *ip_header =
+					(struct iphdr*)(data +
+					sizeof(struct ethhdr));
+				const struct igmp *igmp_header =
+					(struct igmp *)(data +
+				  sizeof(struct ethhdr) + (ip_header->ihl * 4));
+
+				ret->ports[0] = ntohs(igmp_header->igmp_type);
+				ret->ports[1] = 0;
+
+			}
 			break;
 		default:
 			printf("proto:%d\n", ret->proto);

@@ -263,7 +263,8 @@ struct config_rules *read_config(FILE *fd)
 			 * sanity check
 			 */
 			if (c->proto != IPPROTO_ICMP &&
-						c->proto != IPPROTO_ICMPV6) {
+						c->proto != IPPROTO_ICMPV6 &&
+						c->proto != IPPROTO_IGMP) {
 				if ((port_in_ports(0, c->dports,
 						   c->num_dport)) ||
 				   (port_in_ports(0, c->sports, c->num_sport))){
