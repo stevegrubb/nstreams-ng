@@ -3,6 +3,7 @@
 
 #include <netinet/ip.h>
 #include <netinet/ip6.h>
+#include <pcap.h>
 
 struct ip_addr {
 	uint8_t fam; // socket family type
@@ -40,6 +41,6 @@ struct tcpdump {
 #define NS_ICMP_TIMXCEED 11
 #define NS_ICMP_TIMXCEED_IN_TRANSIT 0
 
-struct tcpdump *parse_tcpdump_line(char *orig);
+struct tcpdump *parse_tcpdump_line(const u_char *orig, const struct pcap_pkthdr *header);
 
 #endif

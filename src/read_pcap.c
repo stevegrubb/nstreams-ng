@@ -20,15 +20,18 @@
 /*
  * $Id: read_pcap.c,v 1.1.1.1 2000/07/26 16:18:01 renaud Exp $
  */
-#include <includes.h>
+#include "includes.h"
 #include <pcap.h>
+#include <netinet/tcp.h>
+#include <netinet/udp.h>
+#include <netinet/ether.h>
 #include "parse_tcpdump.h"
 #include "read_pcap.h"
 
 /*
  * pcap packet to a tcpdump struct
  */
-struct tcpdump *parse_pcap_entry(u_char *data)
+struct tcpdump *parse_pcap_entry(const u_char *data, const struct pcap_pkthdr *header)
 {
 	struct tcpdump *ret = malloc(sizeof(struct tcpdump));
 	struct iphdr *ip = (struct iphdr *)(data);
@@ -111,13 +114,13 @@ struct tcpdump *parse_pcap_entry(u_char *data)
 			}
 		case IPPROTO_ICMP:
 			{
-				u_char *t, *c;
+				const u_char *t, *c;
 
 				t = (data + (ip->ihl*4));
 				c = (data + (ip->ihl*4) + sizeof(char));
 
-				ret->ports[0] = *t;
-				ret->ports[1] = *c;
+				ret->ports[0] = ntohs(*t);
+				ret->ports[1] = ntohs(*c);
 				break;
 			}
 		case IPPROTO_IGMP:
@@ -141,13 +144,36 @@ struct tcpdump *parse_pcap_entry(u_char *data)
 		ret->proto = nip->ip6_ctlun.ip6_un1.ip6_un1_nxt;
 
 		/*
-		 * FIXME: Getting the ports is not straightforward. Might want
+		 * Getting the ports is not straightforward. Might want
 		 * to look at the parsing in net/ipv6/output_core.c. In
 		 * particular, look at the ip6_find_1stfragopt function and
 		 * it's while loop.
 		 */
-		ret->ports[0] = 0;
-		ret->ports[1] = 0;
+		if (header->len >= sizeof(struct ether_header) +
+		    sizeof(struct ip6_hdr)) {
+			struct ip6_hdr *ipv6_header = (struct ip6_hdr *)(data +
+						sizeof(struct ether_header));
+
+			// Check if it's an TCP packet
+			if (ipv6_header->ip6_nxt == IPPROTO_TCP) {
+				struct tcphdr *tcp_header =
+					(struct tcphdr *)(data +
+					 sizeof(struct ether_header) +
+					 sizeof(struct ip6_hdr));
+				ret->ports[0] = ntohs(tcp_header->th_sport);
+				ret->ports[1] = ntohs(tcp_header->th_dport);
+			} else if (ipv6_header->ip6_nxt == IPPROTO_UDP) {
+				struct udphdr *udp_header =
+					(struct udphdr *)(data +
+					sizeof(struct ether_header) +
+					sizeof(struct ip6_hdr));
+				ret->ports[0] = ntohs(udp_header->uh_sport);
+				ret->ports[1] = ntohs(udp_header->uh_dport);
+			} else {
+				ret->ports[0] = 0;
+				ret->ports[1] = 0;
+			}
+		}
 	} else {
 		if (ret->proto)
 			fprintf(stderr,

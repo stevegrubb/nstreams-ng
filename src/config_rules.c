@@ -232,6 +232,10 @@ struct config_rules *read_config(FILE *fd)
 				c->proto = IPPROTO_UDP;
 			else if(!strcmp(s, "icmp"))
 				c->proto = IPPROTO_ICMP;
+			else if(!strcmp(s, "icmpv6"))
+				c->proto = IPPROTO_ICMPV6;
+			else if(!strcmp(s, "igmp"))
+				c->proto = IPPROTO_IGMP;
 			else {
 				printf("Unknown protocol '%s'\n",s);
 				exit(1);
@@ -258,7 +262,8 @@ struct config_rules *read_config(FILE *fd)
 			/*
 			 * sanity check
 			 */
-			if (c->proto != IPPROTO_ICMP) {
+			if (c->proto != IPPROTO_ICMP &&
+						c->proto != IPPROTO_ICMPV6) {
 				if ((port_in_ports(0, c->dports,
 						   c->num_dport)) ||
 				   (port_in_ports(0, c->sports, c->num_sport))){

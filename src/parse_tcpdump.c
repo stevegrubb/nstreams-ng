@@ -96,12 +96,12 @@ static int tcp_flag(char c)
 	return 0;
 }
 
-struct tcpdump *parse_tcpdump_line(char *orig)
+struct tcpdump *parse_tcpdump_line(const u_char *orig, const struct pcap_pkthdr *header)
 {
 	char *s, *t;
 	struct tcpdump *ret;
 	char *src, *dst;
-	char *str = strdup(orig);
+	char *str = strdup((char *)orig);
 #ifdef DEBUG
 	printf("%s\n", str);
 #endif

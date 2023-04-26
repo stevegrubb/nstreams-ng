@@ -38,7 +38,7 @@
  * Declaration of the 'data to struct tcpdump' type
  */
 
-typedef struct tcpdump *(*parser_func_t)(char *);
+typedef struct tcpdump *(*parser_func_t)(const u_char *data, const struct pcap_pkthdr *header);
 
 /* 
  * list of the supported output formats
@@ -145,12 +145,14 @@ int main(int argc, char *argv[])
 	int datalink;   /* datalink type */
 	int offset = 0; /* datalink size */
 	struct pcap_pkthdr hdr;
+	memset(&hdr, 0, sizeof(struct pcap_pkthdr));
+
 	/*
 	 * conf : configuration file
 	 * net_conf : networks file
 	 * fd : the entry file
 	 */
-	FILE *conf, *net_conf, *fd;
+	FILE *conf, *net_conf, *fd = NULL;
 
 	struct config_rules *cr;
 	struct cache *cache = NULL;
@@ -462,18 +464,18 @@ int main(int argc, char *argv[])
 		struct tcpdump *dump;
 		struct config_rules *tmp_c;
 		char buffer[1024];
-		char *str;
+		u_char *str;
 
 		/*
 		 * Depending on  the input we were given, there are
 		 * differents way to read it
 		 */
 		if (!f) {
-			str = fgets(buffer, 1023, fd);
+			str = (u_char *)fgets(buffer, 1023, fd);
 			if (!str)
 				break;
 		} else {
-			str = (char*)pcap_next(pcap, &hdr);
+			str = (u_char *)pcap_next(pcap, &hdr);
 			if (str)
 				str+=offset;
 			else if( l != 0 )
@@ -488,7 +490,7 @@ int main(int argc, char *argv[])
 		 * may return NULL if the protocol is unsupported
 		 * (arp), or if an error occured
 		 */
-		dump = (*parser)(str);
+		dump = (*parser)(str, &hdr);
 		if (dump) {
 			const char *name = "unknown";
 
