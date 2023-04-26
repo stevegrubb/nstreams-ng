@@ -6,10 +6,15 @@
 # Popular icmp codes
 #
 icmp-echo-reply:0/icmp:0
-icmp-unreach:3/icmp:0-255
-icmp-redirect:5/icmp:0
+icmp-network-unreach:3/icmp:0
+icmp-host-unreach:3/icmp:1
+icmp-port-unreach:3/icmp:3
+icmp-redirect-network:5/icmp:0
+icmp-redirect-host:5/icmp:1
 icmp-echo-request:8/icmp:0
 icmp-time exceeded in transit:11/icmp:0
+icmpv6-echo-request:128/icmpv6:0
+icmpv6-echo-reply:129/icmpv6:0
 
 #
 # FTP
