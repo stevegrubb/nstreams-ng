@@ -120,8 +120,8 @@ struct tcpdump *parse_pcap_entry(const u_char *data, const struct pcap_pkthdr *h
 				t = (data + (ip->ihl*4));
 				c = (data + (ip->ihl*4) + sizeof(char));
 
-				ret->ports[0] = ntohs(*t);
-				ret->ports[1] = ntohs(*c);
+				ret->ports[0] = *t;
+				ret->ports[1] = *c;
 				break;
 			}
 		case IPPROTO_IGMP:
