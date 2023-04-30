@@ -20,7 +20,7 @@ struct ip_addr get_net(struct ip_addr *addr, int mask);
 struct ip_addr get_broadcast(struct ip_addr *addr, int mask);
 int addr_equal(struct ip_addr *a1, struct ip_addr *a2);
 char *addr_str(struct ip_addr *a1, int port);
-inline void addr_assign(struct ip_addr *a1, struct ip_addr *a2) {
+static inline void addr_assign(struct ip_addr *a1, struct ip_addr *a2) {
 	a1->fam = a2->fam;
 	memcpy(&(a1->addr.ipv6_addr), &(a2->addr.ipv6_addr),
 	       sizeof(struct in6_addr));
