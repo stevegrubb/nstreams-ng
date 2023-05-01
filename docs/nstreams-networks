@@ -9,6 +9,8 @@
 # Netmasks should get lower as you go down the file
 #
 
+#icmpv6-all-devices:ff02::1:2:0/32
+#icmpv6-all-routers:ff02::2:0/32
 private-192-network:192.168.0.0/16
 private-192-admin:192.168.1.1/29
 system-broadcast:224.0.0.1/32
@@ -19,6 +21,4 @@ mdns-multicast:224.0.0.251/32
 Simp-Serv-Discov-Prot:239.255.255.250/32
 private-10-network:10.0.0.0/8
 internet:0.0.0.0/0
-icmpv6-all-devices:ff02::1:2:0/32
-icmpv6-all-routers:ff02::2:0/32
 
