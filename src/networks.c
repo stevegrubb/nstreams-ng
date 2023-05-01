@@ -177,9 +177,9 @@ struct network *read_networks(FILE *fd)
 			}
 
 			/*
-			 * s = 'addess'
+			 * s = 'addess'  FIXME
 			 */
-			inet_aton(s, &n->addr);
+			inet_aton(s, &n->addr.addr.ipv4_addr);
 
 			/*
 			 * convert the IP to the network IP (using the

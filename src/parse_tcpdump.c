@@ -63,7 +63,7 @@ static struct ip_addr ascaddr2intaddr(char *addr, u_short *port,
 		} else
 			*port = p;
 	}
-	inet_aton(addr, &ret);
+	inet_aton(addr, &ret.addr.ipv4_addr); //FIXME
 	return ret;
 }
 
