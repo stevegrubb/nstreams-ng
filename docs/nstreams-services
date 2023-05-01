@@ -6,9 +6,9 @@
 # Popular icmp codes
 #
 icmp-echo-reply:0/icmp:0
-icmp-network-unreach:768/icmp:768
-icmp-host-unreach:769/icmp:769
-icmp-port-unreach:771/icmp:771
+icmp-network-unreach:3/icmp:0
+icmp-host-unreach:3/icmp:1
+icmp-port-unreach:3/icmp:3
 icmp-redirect-network:5/icmp:0
 icmp-redirect-host:5/icmp:1
 icmp-echo-request:8/icmp:0
