@@ -26,6 +26,7 @@
 #include <netinet/udp.h>
 #include <netinet/ether.h>
 #include <netinet/igmp.h>
+#include <netinet/ip_icmp.h>
 #include "parse_tcpdump.h"
 #include "read_pcap.h"
 
@@ -116,9 +117,12 @@ struct tcpdump *parse_pcap_entry(const u_char *data, const struct pcap_pkthdr *h
 		case IPPROTO_ICMP:
 			{
 				const u_char *t, *c;
+				struct icmp *icmp_header = (struct icmp*)
+				       (data + sizeof(struct ether_header) +
+					sizeof(struct ip));
 
-				t = (data + (ip->ihl*4));
-				c = (data + (ip->ihl*4) + sizeof(char));
+				t = icmp_header->icmp_type;
+				c = icmp_header->icmp_code;
 
 				ret->ports[0] = *t;
 				ret->ports[1] = *c;
