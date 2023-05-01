@@ -27,6 +27,7 @@
 #include <netinet/ether.h>
 #include <netinet/igmp.h>
 #include <netinet/ip_icmp.h>
+#include <netinet/icmp6.h>
 #include "parse_tcpdump.h"
 #include "read_pcap.h"
 
@@ -182,6 +183,19 @@ struct tcpdump *parse_pcap_entry(const u_char *data, const struct pcap_pkthdr *h
 					sizeof(struct ip6_hdr));
 				ret->ports[0] = ntohs(udp_header->uh_sport);
 				ret->ports[1] = ntohs(udp_header->uh_dport);
+			} else if (ipv6_header->ip6_nxt ==  IPPROTO_ICMPV6) {
+				u_short t, c; // ports are short, do this to
+					      // prevent sign extension
+				struct icmp6_hdr *icmp6_header =
+					(struct icmp6_hdr*) (data +
+					sizeof(struct ether_header) +
+					sizeof(struct ip6_hdr));
+
+				t = icmp6_header->icmp6_type;
+				c = icmp6_header->icmp6_code;
+
+				ret->ports[0] = t;
+				ret->ports[1] = c;
 			} else {
 				ret->ports[0] = 0;
 				ret->ports[1] = 0;
