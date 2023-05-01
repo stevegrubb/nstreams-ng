@@ -116,7 +116,8 @@ struct tcpdump *parse_pcap_entry(const u_char *data, const struct pcap_pkthdr *h
 			}
 		case IPPROTO_ICMP:
 			{
-				const u_char *t, *c;
+				u_short t, c; // ports are short, do this to
+					      // prevent sign extension
 				struct icmp *icmp_header = (struct icmp*)
 				       (data + sizeof(struct ether_header) +
 					sizeof(struct ip));
@@ -124,8 +125,8 @@ struct tcpdump *parse_pcap_entry(const u_char *data, const struct pcap_pkthdr *h
 				t = icmp_header->icmp_type;
 				c = icmp_header->icmp_code;
 
-				ret->ports[0] = *t;
-				ret->ports[1] = *c;
+				ret->ports[0] = t;
+				ret->ports[1] = c;
 				break;
 			}
 		case IPPROTO_IGMP:
