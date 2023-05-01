@@ -126,14 +126,11 @@ struct tcpdump *parse_pcap_entry(const u_char *data, const struct pcap_pkthdr *h
 			}
 		case IPPROTO_IGMP:
 			{
-				const struct iphdr *ip_header =
-					(struct iphdr*)(data +
-					sizeof(struct ethhdr));
-				const struct igmp *igmp_header =
-					(struct igmp *)(data +
-				  sizeof(struct ethhdr) + (ip_header->ihl * 4));
+				const u_char *igmp_packet = data +
+					sizeof(struct ether_header) +
+					sizeof(struct ip);
 
-				ret->ports[0] = ntohs(igmp_header->igmp_type);
+				ret->ports[0] = igmp_packet[0];
 				ret->ports[1] = 0;
 
 			}
